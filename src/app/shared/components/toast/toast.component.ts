@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnInit, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnInit, inject } from '@angular/core';
 import { Toast } from '@core/models/toast/toast';
 import { ToastService } from '@shared/services/toast.service';
 
@@ -13,24 +13,29 @@ import { ToastService } from '@shared/services/toast.service';
   @if(display()) {
     <div class="toaster">
       <div class="toast {{toast().severity}}">{{ toast().detail }}</div>
+      <button class="close-btn" (click)="close()">&times;</button>
     </div>
   }`,
   styleUrl: './toast.component.css',
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ToastComponent implements OnInit {
+export class ToastComponent implements AfterViewInit {
   private _toastService = inject(ToastService);
   toast = this._toastService.toast;
   display = this._toastService.display;
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.automaticClose();
   }
 
   automaticClose() {
     setTimeout(() => {
-      this._toastService.closeToast();
+      this.close();
     }, 3000);
+  }
+
+  close() {
+    this._toastService.closeToast();
   }
 
 }
