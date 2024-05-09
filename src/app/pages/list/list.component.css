@@ -14,7 +14,7 @@ table {
 }
 
 .header-table th {
-  min-width: 3rem
+  min-width: 10rem
 }
 
 .body-table {
@@ -30,7 +30,7 @@ table {
 }
 
 .body-table td {
-  min-width: 3rem
+  min-width: 10rem
 }
 
 .avatar {
