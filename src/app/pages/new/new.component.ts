@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ProductsService } from '../../shared/services/api/products.service';
 import { Subject, debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs';
@@ -19,7 +19,7 @@ import { ToastService } from '@shared/services/toast.service';
   styleUrl: './new.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NewComponent implements OnDestroy {
+export class NewComponent implements OnInit, OnDestroy {
   unsubscribe$ = new Subject<void>();
   form!: FormGroup;
   today = new Date();
@@ -31,8 +31,9 @@ export class NewComponent implements OnDestroy {
     private _router: Router,
     private _activeRoute: ActivatedRoute,
     private _toastService: ToastService
-  ) {
+  ) {}
 
+  ngOnInit(): void {
     this._activeRoute.params.pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe((params) => {
@@ -105,7 +106,6 @@ export class NewComponent implements OnDestroy {
     this._productsService.postProduct({ ...this.form.value, date_revision: this.f['date_revision'].value }).pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
-      this.clearForm();
       this._router.navigate(['/list']);
       this._toastService.openToast({
         severity: 'success',
@@ -115,7 +115,8 @@ export class NewComponent implements OnDestroy {
   }
 
   updateProduct() {
-    this._productsService.putProduct({ ...this.form.value, id: this.product?.id, date_revision: this.f['date_revision'].value }).pipe(
+    this._productsService.putProduct({ ...this.form.value, id: this.product?.id, date_revision: this.f['date_revision'].value })
+    .pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe(() => {
       this.clearForm();
@@ -131,7 +132,6 @@ export class NewComponent implements OnDestroy {
     this._productsService.getProducts().pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe((products) => {
-      console.log(products, 'hola');
       this.product = products.find((product) => product.id === id)!;
       this.form.patchValue({ ...this.product, date_release: this.product.date_release.split('T')[0], date_revision: this.product.date_revision.split('T')[0] });
       this.f['id'].disable();

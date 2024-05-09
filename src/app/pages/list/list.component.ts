@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { ProductsService } from '@shared/services/api/products.service';
 import { Router } from '@angular/router';
 import { Product } from '@core/models/product/product';
@@ -22,7 +22,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
   styleUrl: './list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ListComponent implements OnDestroy {
+export class ListComponent implements OnInit, OnDestroy {
 
   unsubscribe$ = new Subject<void>();
   products: Product[] = [];
@@ -39,6 +39,10 @@ export class ListComponent implements OnDestroy {
     private _router: Router,
     private _cd: ChangeDetectorRef
   ) {
+
+  }
+
+  ngOnInit(): void {
     this.getProducts();
     this.search.valueChanges
       .pipe(
@@ -60,7 +64,7 @@ export class ListComponent implements OnDestroy {
         });
         this.pageCurrent = 1;
       });
-  }
+    }
 
   getProducts() {
     this._productsService.getProducts().pipe(
@@ -80,7 +84,7 @@ export class ListComponent implements OnDestroy {
   changePage(page: number) {
     this.pageCurrent = page;
     const start = (page - 1) * this.row;
-    const end = start + this.row;
+    const end = Math.min(start + this.row, this.products.length);
     this.productsFiltered = this.products.slice(start, end);
   }
 

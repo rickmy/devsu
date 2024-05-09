@@ -27,7 +27,7 @@ export class ProductsService {
   }
 
   postProduct(product: Product) {
-    return this._httpClient.post<Product[]>(`${this.urlBase}bp/products`, product);
+    return this._httpClient.post<Product>(`${this.urlBase}bp/products`, product);
   }
 
   putProduct(product: Product) {
@@ -35,7 +35,7 @@ export class ProductsService {
   }
 
   deleteProduct(id: string) {
-    return this._httpClient.delete<Product>(`${this.urlBase}bp/products`, {
+    return this._httpClient.delete<void>(`${this.urlBase}bp/products`, {
       params: {
         id
       }
